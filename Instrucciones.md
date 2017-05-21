@@ -21,3 +21,14 @@ var options = new RewriteOptions()
 ```
 
 7. Habilitar SSL en Propiedades -> Debug
+8. Agregar el código en ApplicationUser.cs:12
+
+```
+public virtual string TfaKey { get; set; }
+```
+
+9. Agregar el código en 00000000000000_CreateIdentitySchema.cs:60
+
+```
+TfaKey = table.Column<string>(maxLength: 32, nullable: true),
+```
