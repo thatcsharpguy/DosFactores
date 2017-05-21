@@ -126,3 +126,5 @@ else
 	}
 }
 ```
+
+21. Ejecutar Update-Database
