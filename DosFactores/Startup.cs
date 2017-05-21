@@ -53,6 +53,7 @@ namespace DosFactores
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddTokenProvider(GoogleAuthenticatorProvider.ProviderName, typeof(GoogleAuthenticatorProvider))
                 .AddDefaultTokenProviders();
 
             services.AddMvc();

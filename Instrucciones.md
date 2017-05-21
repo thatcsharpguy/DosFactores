@@ -54,4 +54,10 @@ app.UseSession();
 
 13. Agregar nuevo proyecto (Google.Authenticator): Class Library (.NET Core)
 14. Añadir clases: SetupCode y TwoFactorAuthenticator (Ver https://github.com/BrandonPotter/GoogleAuthenticator)
-15. Agregar referencia de Goolge.Authenticator -> DosFactores  
+15. Agregar referencia de Goolge.Authenticator -> DosFactores
+16. Agregar clase GoogleAuthenticatorProvider (Ver: http://www.domstamand.com/two-factor-authentication-in-asp-net-identity-3-using-totp-authenticator/)
+17. Agregar el código en Startup.cs:57
+
+```
+.AddTokenProvider(GoogleAuthenticatorProvider.ProviderName, typeof(GoogleAuthenticatorProvider))
+```
