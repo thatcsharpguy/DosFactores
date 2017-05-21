@@ -132,7 +132,7 @@ namespace DosFactores.Controllers
                 user.TfaKey = tfaKey;
                 await _userManager.UpdateAsync(user);
                 var authenticator = new TwoFactorAuthenticator();
-                var code = authenticator.GenerateSetupCode(user.UserName, tfaKey, 300, 300);
+                var code = authenticator.GenerateSetupCode($"DosFactores ({user.UserName})", tfaKey, 300, 300);
                 TempData["AuthenticatorQr"] = code.QrCodeSetupImageUrl;
                 _logger.LogInformation(1, "User enabled two-factor authentication.");
             }
