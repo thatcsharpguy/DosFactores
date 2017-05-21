@@ -51,3 +51,7 @@ services.AddSession(options =>
 ```
 app.UseSession();
 ```
+
+13. Agregar nuevo proyecto (Google.Authenticator): Class Library (.NET Core)
+14. Añadir clases: SetupCode y TwoFactorAuthenticator (Ver https://github.com/BrandonPotter/GoogleAuthenticator)
+15. Agregar referencia de Goolge.Authenticator -> DosFactores  
