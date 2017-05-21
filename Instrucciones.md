@@ -19,3 +19,5 @@ services.Configure<MvcOptions>(options =>
 var options = new RewriteOptions()
    .AddRedirectToHttps();
 ```
+
+7. Habilitar SSL en Propiedades -> Debug
