@@ -32,3 +32,22 @@ public virtual string TfaKey { get; set; }
 ```
 TfaKey = table.Column<string>(maxLength: 32, nullable: true),
 ```
+
+10. Agregar paquete Microsoft.AspNetCore.Session
+11. Agregar el código en Startup.cs:60
+
+```
+// Add session support
+services.AddSession(options =>
+{
+	// Set a short timeout for easy testing.
+	options.IdleTimeout = TimeSpan.FromSeconds(10);
+	options.CookieHttpOnly = true;
+});
+```
+
+12. Agrear el código en Startup.cs:98
+
+```
+app.UseSession();
+```
