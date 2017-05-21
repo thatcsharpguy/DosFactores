@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using DosFactores.Models;
 using DosFactores.Models.ManageViewModels;
 using DosFactores.Services;
+using Google.Authenticator;
 
 namespace DosFactores.Controllers
 {
@@ -60,6 +61,7 @@ namespace DosFactores.Controllers
             }
             var model = new IndexViewModel
             {
+                TwoFactorAuthenticatorQrCode = TempData["AuthenticatorQr"]?.ToString(),
                 HasPassword = await _userManager.HasPasswordAsync(user),
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
@@ -115,6 +117,26 @@ namespace DosFactores.Controllers
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
             await _smsSender.SendSmsAsync(model.PhoneNumber, "Your security code is: " + code);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
+        }
+
+        //
+        // POST: /Manage/RequestTwoFactorAuthentication
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RequestTwoFactorAuthentication()
+        {
+            var user = await GetCurrentUserAsync();
+            if (user != null)
+            {
+                var tfaKey = Guid.NewGuid().ToString("N");
+                user.TfaKey = tfaKey;
+                await _userManager.UpdateAsync(user);
+                var authenticator = new TwoFactorAuthenticator();
+                var code = authenticator.GenerateSetupCode(user.UserName, tfaKey, 300, 300);
+                TempData["AuthenticatorQr"] = code.QrCodeSetupImageUrl;
+                _logger.LogInformation(1, "User enabled two-factor authentication.");
+            }
+            return RedirectToAction(nameof(Index), "Manage");
         }
 
         //

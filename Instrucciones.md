@@ -61,3 +61,68 @@ app.UseSession();
 ```
 .AddTokenProvider(GoogleAuthenticatorProvider.ProviderName, typeof(GoogleAuthenticatorProvider))
 ```
+
+18. Agregar el código en IndexViewModel.cs:17
+
+```
+public string TwoFactorAuthenticatorQrCode { get; set; }
+```
+
+19. Agregar el código correspondiente para la generación del QR en el archivo ManageController.cs: (64, 123 y 168)
+
+```
+TwoFactorAuthenticatorQrCode = TempData["AuthenticatorQr"]?.ToString(),
+```
+
+```
+// POST: /Manage/RequestTwoFactorAuthentication
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> RequestTwoFactorAuthentication()
+{
+  var user = await GetCurrentUserAsync();
+  if (user != null)
+  {
+	  var tfaKey = Guid.NewGuid().ToString("N");
+	  user.TfaKey = tfaKey;
+	  await _userManager.UpdateAsync(user);
+	  var authenticator = new TwoFactorAuthenticator();
+	  var code = authenticator.GenerateSetupCode(user.UserName, tfaKey, 300, 300);
+	  TempData["AuthenticatorQr"] = code.QrCodeSetupImageUrl;
+	  _logger.LogInformation(1, "User enabled two-factor authentication.");
+  }
+  return RedirectToAction(nameof(Index), "Manage");
+}
+```
+
+```
+user.TfaKey = null;
+await _userManager.UpdateAsync(user);
+```
+
+20. Reemplazar el código del <dd></dd> de la autenticación de dos factores por 
+
+```
+@if (Model.TwoFactorAuthenticatorQrCode != null)
+{
+	<img src="@Model.TwoFactorAuthenticatorQrCode" />
+	<form asp-controller="Manage" asp-action="EnableTwoFactorAuthentication" method="post" class="form-horizontal">
+		<button type="submit" class="btn-link btn-bracketed">Yes, I've scanned the code</button> Disabled
+	</form>
+}
+else
+{
+	if (Model.TwoFactor)
+	{
+		<form asp-controller="Manage" asp-action="DisableTwoFactorAuthentication" method="post" class="form-horizontal">
+			Enabled <button type="submit" class="btn-link btn-bracketed">Disable</button>
+		</form>
+	}
+	else
+	{
+		<form asp-controller="Manage" asp-action="RequestTwoFactorAuthentication" method="post" class="form-horizontal">
+			<button type="submit" class="btn-link btn-bracketed">Enable</button> Disabled
+		</form>
+	}
+}
+```

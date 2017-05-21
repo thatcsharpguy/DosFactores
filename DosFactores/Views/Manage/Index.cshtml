@@ -50,11 +50,16 @@
 
         <dt>Two-Factor Authentication:</dt>
         <dd>
-            <p>
-                There are no two-factor authentication providers configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532713">this article</a>
-                for setting up this application to support two-factor authentication.
-            </p>
-            @*@if (Model.TwoFactor)
+            @if (Model.TwoFactorAuthenticatorQrCode != null)
+            {
+                <img src="@Model.TwoFactorAuthenticatorQrCode" />
+                <form asp-controller="Manage" asp-action="EnableTwoFactorAuthentication" method="post" class="form-horizontal">
+                    <button type="submit" class="btn-link btn-bracketed">Yes, I've scanned the code</button> Disabled
+                </form>
+            }
+            else
+            {
+                if (Model.TwoFactor)
                 {
                     <form asp-controller="Manage" asp-action="DisableTwoFactorAuthentication" method="post" class="form-horizontal">
                         Enabled <button type="submit" class="btn-link btn-bracketed">Disable</button>
@@ -62,10 +67,11 @@
                 }
                 else
                 {
-                    <form asp-controller="Manage" asp-action="EnableTwoFactorAuthentication" method="post" class="form-horizontal">
+                    <form asp-controller="Manage" asp-action="RequestTwoFactorAuthentication" method="post" class="form-horizontal">
                         <button type="submit" class="btn-link btn-bracketed">Enable</button> Disabled
                     </form>
-                }*@
+                }
+            }
         </dd>
     </dl>
 </div>
